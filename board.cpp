@@ -1,5 +1,10 @@
 #include "board.h"
 
+string BLANK = "-|-";
+string WHITE = "-W-";
+string BLACK = "-B-";
+string turns[] = { WHITE, BLACK };
+
 Board::Board()
 {
     board.push_back({"  ", "  A", "  B", "  C", "  D", "  E", "  F", "  G", "  H", "  I", "  J", "  K", "  L", "  M", "  N", "  O", "  P", "  Q", "  R", "  S"});
@@ -26,23 +31,27 @@ void Board::print_board() {
     }
     cout << endl;
 
-    cout << (int) 'S' << endl;
 }
 
-bool Board::make_play(string coord) {
+bool Board::make_play(string coord, int turn) {
     
-    int col = get_col_index(coord[0]);
     int row = atoi(coord.substr(1).c_str());
+    int col = get_col_index(coord[0]);
 
-    if (
-        col < 1 || col > 19 ||
-        row < 1 || row > 19
-    ) {
-        
+    if (!is_valid_move(row, col)) {
+        return false;
     }
+
+    board[row][col] = turns[turn];
+
+    if (is_win(row, col, turn)) {
+        winner = turn;
+    }
+
+    return true;
 }
 
-int get_col_index(char c) {
+int Board::get_col_index(char c) {
 
     int val = toupper((int)c) - 64;
 
@@ -52,4 +61,90 @@ int get_col_index(char c) {
 
     return val;
 
+}
+
+bool Board::is_valid_move(int row, int col){
+    
+    if (board[row][col] != BLANK) {
+        return false;
+    }
+
+    for ( int i = -1; i < 2; i++ ) {
+        for ( int j = -1; j < 2; j++ ) {
+
+            if (
+                (i == 0 && j == 0) ||
+                row + i < 1 || row + i > 19 ||
+                col + j < 1 || col + j > 19
+            ) {
+                continue;
+            }
+
+            if (board[row + i][col + j] != BLANK) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Board::is_win(int row, int col, int turn) {
+    int connected = 1;
+
+    for ( int i = 0; i < 2; i++ ) {
+        
+        for ( int j = -1; j < 2; j++ ) {
+            
+            int curr_row = row + i;
+            int curr_col = col + j;
+            int v_dir = i;
+            int h_dir = j;
+
+            if (
+                (i == 0 && j == 0) ||
+                curr_row < 1 || curr_row > 19 ||
+                curr_col < 1 || curr_col > 19
+            ) {
+                continue;
+            }
+
+            while (true) {
+                if (
+                    curr_row == 0 || curr_row > 19 ||
+                    curr_col == 0 || curr_col > 19 ||
+                    board[curr_row][curr_col] != turns[turn]
+                ) {
+
+                    if (h_dir != j || v_dir != i) {
+                        break;
+                    }
+
+                    v_dir *= -1;
+                    h_dir *= -1;
+                    curr_row = row + i;
+                    curr_col = col + j;
+
+                } else {
+
+                    connected++;
+                    curr_row += v_dir;
+                    curr_col += h_dir;
+                }
+
+            }
+
+            if (connected == 6) {
+                return true;
+            }
+            connected = 1;
+        }
+
+    }
+
+    return false;
+}
+
+vector<vector<string>> Board::get_board() {
+    return board;
 }
