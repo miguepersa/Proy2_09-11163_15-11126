@@ -13,6 +13,8 @@ Board::Board()
         string linestr = i < 10 ? to_string(i) + "  " : to_string(i) + " ";
         board.push_back({linestr, "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-", "-|-"});
     }
+
+    board[10][10] = BLACK;
 }
 
 Board::~Board()
@@ -42,10 +44,10 @@ bool Board::make_play(string coord, int turn) {
         return false;
     }
 
-    board[row][col] = turns[turn];
+    this->board[row][col] = turns[turn];
 
     if (is_win(row, col, turn)) {
-        winner = turn;
+        this->winner = turn;
     }
 
     return true;
@@ -64,7 +66,6 @@ int Board::get_col_index(char c) {
 }
 
 bool Board::is_valid_move(int row, int col){
-    
     if (board[row][col] != BLANK) {
         return false;
     }
@@ -90,12 +91,11 @@ bool Board::is_valid_move(int row, int col){
 }
 
 bool Board::is_win(int row, int col, int turn) {
-    int connected = 1;
-
-    for ( int i = 0; i < 2; i++ ) {
+    int connected;
+    for ( int i = -1; i < 2; i++ ) {
         
         for ( int j = -1; j < 2; j++ ) {
-            
+
             int curr_row = row + i;
             int curr_col = col + j;
             int v_dir = i;
@@ -104,11 +104,14 @@ bool Board::is_win(int row, int col, int turn) {
             if (
                 (i == 0 && j == 0) ||
                 curr_row < 1 || curr_row > 19 ||
-                curr_col < 1 || curr_col > 19
+                curr_col < 1 || curr_col > 19 ||
+                board[curr_row][curr_col] != turns[turn]
             ) {
                 continue;
             }
+            connected = 1;
 
+            bool flipped = false;
             while (true) {
                 if (
                     curr_row == 0 || curr_row > 19 ||
@@ -116,14 +119,16 @@ bool Board::is_win(int row, int col, int turn) {
                     board[curr_row][curr_col] != turns[turn]
                 ) {
 
-                    if (h_dir != j || v_dir != i) {
+                    if (flipped) {
+                        
                         break;
                     }
 
+                    flipped = true;
                     v_dir *= -1;
                     h_dir *= -1;
-                    curr_row = row + i;
-                    curr_col = col + j;
+                    curr_row = row + v_dir;
+                    curr_col = col + h_dir;
 
                 } else {
 
@@ -134,10 +139,9 @@ bool Board::is_win(int row, int col, int turn) {
 
             }
 
-            if (connected == 6) {
+            if (connected >= 6) {
                 return true;
             }
-            connected = 1;
         }
 
     }

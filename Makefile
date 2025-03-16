@@ -9,4 +9,4 @@ connect6: $(OBJ)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f *.o puzzle_solver
+	rm -f *.o connect6
