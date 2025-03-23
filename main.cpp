@@ -17,6 +17,12 @@ using namespace std;
 string convert_to_string(int i, int j);
 int main(int argc, char const *argv[])
 {
+    if (argc < 3) {
+        cout << "args error" << endl;
+        return 1;
+
+    }
+
     Board board;
     int turn = 0;
     string move;
@@ -32,7 +38,7 @@ int main(int argc, char const *argv[])
 
     Agent agent(agent_turn, player_turn, stoi(time));
 
-    board.print_board_status();
+    board.print_board();
 
 
     while (board.winner == -1) {
