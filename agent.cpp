@@ -47,34 +47,35 @@ bool Agent::check_surroundings(int pos_i, int pos_j) {
 
 }
 
-int Agent::alphaBeta(int depth, int alpha, int beta, bool maximizingPlayer) {
-    int score = evaluateBoard();
-    if (score == INF || score == -INF || depth == 3) return score;
+// Nuevo algoritmo Alpha-Beta con profundidad
+int Agent::alphaBeta(int depth, int alpha, int beta, bool isMaximizing) {
+    if (depth == 0 || checkWin(turn) || checkWin(enemy))
+        return evaluateBoard();
 
-    vector<pair<int, int>> moves = get_available_moves();
+    vector<pair<int, int>> moves = get_available_moves(status);
 
-    if (moves.empty()) return 0;
-
-    if (maximizingPlayer) {
+    if (isMaximizing) {
         int maxEval = -INF;
-        for (size_t i = 0; i < min(moves.size(), (size_t)10); i++) {
-            status[moves[i].first][moves[i].second] = turn;
-            int eval = alphaBeta(depth + 1, alpha, beta, false);
-            status[moves[i].first][moves[i].second] = -1;
+        for (auto move : moves) {
+            status[move.first][move.second] = turn;
+            int eval = alphaBeta(depth - 1, alpha, beta, false);
+            status[move.first][move.second] = -1; 
             maxEval = max(maxEval, eval);
             alpha = max(alpha, eval);
-            if (beta <= alpha) break;
+            if (beta <= alpha)
+                break;
         }
         return maxEval;
     } else {
         int minEval = INF;
-        for (size_t i = 0; i < min(moves.size(), (size_t)10); i++) {
-            status[moves[i].first][moves[i].second] = enemy;
-            int eval = alphaBeta(depth + 1, alpha, beta, true);
-            status[moves[i].first][moves[i].second] = -1;
+        for (auto move : moves) {
+            status[move.first][move.second] = enemy;
+            int eval = alphaBeta(depth - 1, alpha, beta, true);
+            status[move.first][move.second] = -1; 
             minEval = min(minEval, eval);
             beta = min(beta, eval);
-            if (beta <= alpha) break;
+            if (beta <= alpha)
+                break;
         }
         return minEval;
     }
