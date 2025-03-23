@@ -1,0 +1,12 @@
+# Proy2_09-11163_15-11126
+## Compilacion
+Para compilar el proyecto es necesario ejecutar el comando
+```
+$ make
+```
+
+## Ejecucion
+Para ejecutar el proyecto, es necesario ejecutar el script 'agenteConnetc6.sh', indicando el color de las fichas con las que jugara el agente y el tiempo limite que tiene para computar su solucion.
+```
+$ agenteConnect6.sh -fichas=<blancas|negras> -tps=[segundos]
+```
