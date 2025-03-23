@@ -48,7 +48,7 @@ int main(int argc, char const *argv[])
 
             pair<int, int> move1 = agent.findBestMove(board.get_board_status());
 
-            board.make_play(convert_to_string(move1.first, move1.second), agent_turn);
+            if (!board.make_play(convert_to_string(move1.first, move1.second), agent_turn)) cout << convert_to_string(move1.first, move1.second) << endl;
 
             if (board.winner != -1) {
                 break;
@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
 
             pair<int, int> move2 = agent.findBestMove(board.get_board_status());
             
-            board.make_play(convert_to_string(move2.first, move2.second), agent_turn);
+            if (!board.make_play(convert_to_string(move2.first, move2.second), agent_turn)) cout << convert_to_string(move2.first, move2.second) << endl;
 
             turn = player_turn;
             board.print_board();
