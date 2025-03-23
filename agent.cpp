@@ -14,9 +14,9 @@ vector<pair<int, int>> Agent::get_available_moves() {
 
     vector<pair<int, int>> moves;
 
-    for (unsigned int i = 0; i < this->status.size(); i++ ) {
-        for (unsigned int j = 0; j < this->status[i].size(); j++ ) {
-            if (this->status[i][j] == -1 && check_surroundings(i, j)) {
+    for (unsigned int i = 0; i < status.size(); i++ ) {
+        for (unsigned int j = 0; j < status[i].size(); j++ ) {
+            if (status[i][j] == -1 && check_surroundings(i, j)) {
                 moves.push_back({i, j});
             }
         }
@@ -37,7 +37,7 @@ bool Agent::check_surroundings(int pos_i, int pos_j) {
                 continue;
             }
 
-            if (this->status[pos_i + i][pos_j + j] != -1) {
+            if (status[pos_i + i][pos_j + j] != -1) {
                 return true;
             }
         }
@@ -81,7 +81,7 @@ int Agent::alphaBeta(int depth, int alpha, int beta, bool maximizingPlayer) {
 }
 
 pair<int, int> Agent::findBestMove(vector<vector<int>> board) {
-    this->status = board;
+    status = board;
     vector<pair<int, int>> moves = get_available_moves();
 
     if (moves.empty()) return {-1, -1};
