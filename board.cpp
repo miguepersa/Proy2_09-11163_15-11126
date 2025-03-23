@@ -66,6 +66,15 @@ int Board::get_col_index(char c) {
 }
 
 bool Board::is_valid_move(int row, int col){
+
+    if (
+        row < 1     ||
+        row > 19    ||
+        col < 1     ||
+        col > 19
+    ) {
+        return false;
+    }
     if (board[row][col] != BLANK) {
         return false;
     }

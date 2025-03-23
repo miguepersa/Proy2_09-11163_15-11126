@@ -76,6 +76,10 @@ int main(int argc, char const *argv[])
 
             board.print_board();
 
+            if (board.winner != -1) {
+                break;
+            }
+
             cout << "Indique su segundo movimiento: ";
             cin >> move;
 

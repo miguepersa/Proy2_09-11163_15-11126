@@ -17,7 +17,7 @@ vector<pair<int, int>> Agent::get_available_moves(vector<vector<int>> board) {
     for (unsigned int i = 0; i < board.size(); ++i) {
         for (unsigned int j = 0; j < board[i].size(); ++j) {
             if (board[i][j] == -1 && check_surroundings(i, j, board)) {
-                moves.emplace_back(i, j);
+                moves.push_back({i, j});
             }
         }
     }
