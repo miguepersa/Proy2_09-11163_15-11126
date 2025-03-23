@@ -1,4 +1,4 @@
-OBJ= main.o board.o
+OBJ= main.o board.o agent.o
 CXXFLAGS= -std=c++17 -Wall -O2
 CXX= g++
 

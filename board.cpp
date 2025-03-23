@@ -152,3 +152,42 @@ bool Board::is_win(int row, int col, int turn) {
 vector<vector<string>> Board::get_board() {
     return board;
 }
+
+vector<vector<int>> Board::get_board_status() {
+    vector<vector<int>> out = {};
+
+    for ( uint i = 1; i <= 19; i++ ) {
+        vector<int> row = {};
+        
+        for ( uint j = 1; j <= 19; j++ ) {
+            if (board[i][j] == WHITE) {
+                row.push_back(0);
+            } else if (board[i][j] == BLACK) {
+                row.push_back(1);
+            } else {
+                row.push_back(-1);
+            }
+        }
+
+        out.push_back(row);
+    }
+        
+    return out;
+
+}
+
+void Board::print_board_status() {
+    vector<vector<int>> status = get_board_status();
+
+    for (uint i = 0; i < status.size(); i++) {
+        vector<int> row = status[i];
+
+        for (uint j = 0; j < row.size(); j++) {
+            cout << row[j];
+        }
+        cout << endl;
+    }
+    cout << endl;
+
+}       
+
