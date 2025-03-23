@@ -25,15 +25,21 @@ vector<pair<int, int>> Agent::get_available_moves(vector<vector<int>> board) {
     return moves;
 }
 
-bool Agent::check_surroundings(int pos_i, int pos_j, vector<vector<int>> status) {
+bool Agent::check_surroundings(int pos_i, int pos_j, vector<vector<int>> b) {
 
-    for ( unsigned int i = -1; i < 2; i++ ) {
-        for ( unsigned int j = -1; i < 2; i++ ) {
-            if (i == 0 && j == 0) {
+    for ( int i = -1; i < 2; i++ ) {
+        for ( int j = -1; i < 2; i++ ) {
+            if (
+                (i == 0 && j == 0) || 
+                pos_i + i < 0   ||
+                pos_i + i > 18  ||
+                pos_j + j < 0   ||
+                pos_j + j > 18
+            ) {
                 continue;
             }
 
-            if (status[pos_i + i][pos_j + j] != -1) {
+            if (b[pos_i + i][pos_j + j] != -1) {
                 return true;
             }
         }
@@ -48,6 +54,7 @@ int Agent::alphaBeta(int depth, int alpha, int beta, bool maximizingPlayer) {
     if (score == INF || score == -INF || depth == 3) return score;
 
     vector<pair<int, int>> moves = get_available_moves(status);
+
     if (moves.empty()) return 0;
 
     if (maximizingPlayer) {
@@ -78,6 +85,7 @@ int Agent::alphaBeta(int depth, int alpha, int beta, bool maximizingPlayer) {
 pair<int, int> Agent::findBestMove(vector<vector<int>> board) {
     this->status = board;
     vector<pair<int, int>> moves = get_available_moves(status);
+
     if (moves.empty()) return {-1, -1};
 
     pair<int, int> bestMove;
