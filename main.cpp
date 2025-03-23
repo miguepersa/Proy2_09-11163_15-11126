@@ -7,25 +7,30 @@
 #endif
 
 #include <iostream>
-#include<string>
+#include <string>
+#include <sstream>
 #include "board.h"
 #include "agent.h"
 
+using namespace std;
+
+string convert_to_string(int i, int j);
 int main(int argc, char const *argv[])
 {
     Board board;
     int turn = 0;
     string move;
-
-    if (argv[1] != "blancas" && argv[1] != "negras") {
+    string fichas = argv[1];
+    string time = argv[2];
+    if (fichas != "blancas" && fichas != "negras") {
         cout << "Error al indicar color de fichas. Ingrese un color valido <blancas|negras>" << endl;
         return 1;
     }
 
-    int agent_turn = argv[1] == 'blancas' ? WHITE_TURN : BLACK_TURN;
+    int agent_turn = fichas == "blancas" ? WHITE_TURN : BLACK_TURN;
     int player_turn = agent_turn == WHITE_TURN ? BLACK_TURN : WHITE_TURN;
 
-    Agent agent(agent_turn, player_turn, stoi(argv[2]));
+    Agent agent(agent_turn, player_turn, stoi(time));
 
     board.print_board_status();
 
@@ -43,7 +48,7 @@ int main(int argc, char const *argv[])
             }
 
             pair<int, int> move2 = agent.findBestMove(board.get_board_status());
-            board.make_play(convert_to_string(move1.first, move1.second), agent_turn);
+            board.make_play(convert_to_string(move2.first, move2.second), agent_turn);
 
             turn = player_turn;
             board.print_board();
@@ -51,13 +56,14 @@ int main(int argc, char const *argv[])
             if (board.winner != -1) {
                 break;
             }
+
         } else {
 
             cout << "Turno del jugador" << endl << endl;
             cout << "Indique su primer movimiento: ";
             cin >> move;
 
-            while (!make_play(move, player_turn)) {
+            while (!board.make_play(move, player_turn)) {
                 cout << "Movimiento invalido. Ingrese un movimiento valido: ";
                 cin >> move;
             }
@@ -67,7 +73,7 @@ int main(int argc, char const *argv[])
             cout << "Indique su segundo movimiento: ";
             cin >> move;
 
-            while (!make_play(move, player_turn)) {
+            while (!board.make_play(move, player_turn)) {
                 cout << "Movimiento invalido. Ingrese un movimiento valido: ";
                 cin >> move;
             }
@@ -89,6 +95,6 @@ int main(int argc, char const *argv[])
 string convert_to_string(int i, int j) {
     stringstream m;
     char col = (char)(i + 65);
-    m << vol << j;
+    m << col << j;
     return m.str();
 }
