@@ -47,6 +47,7 @@ int main(int argc, char const *argv[])
             cout << "Turno del agente" << endl << endl;
 
             pair<int, int> move1 = agent.findBestMove(board.get_board_status());
+
             board.make_play(convert_to_string(move1.first, move1.second), agent_turn);
 
             if (board.winner != -1) {
@@ -54,6 +55,7 @@ int main(int argc, char const *argv[])
             }
 
             pair<int, int> move2 = agent.findBestMove(board.get_board_status());
+            
             board.make_play(convert_to_string(move2.first, move2.second), agent_turn);
 
             turn = player_turn;
@@ -105,6 +107,6 @@ int main(int argc, char const *argv[])
 string convert_to_string(int i, int j) {
     stringstream m;
     char col = (char)(i + 65);
-    m << col << j;
+    m << col << (j + 1);
     return m.str();
 }
