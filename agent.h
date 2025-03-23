@@ -27,8 +27,8 @@ class Agent {
 
     Agent(int, int, int);
     ~Agent();
-    vector<pair<int, int>> get_available_moves(vector<vector<int>>);
-    bool check_surroundings(int, int, vector<vector<int>>);
+    vector<pair<int, int>> get_available_moves();
+    bool check_surroundings(int, int);
     int alphaBeta(int, int, int, bool);
     pair<int, int> findBestMove(vector<vector<int>>);
     int evaluateBoard();

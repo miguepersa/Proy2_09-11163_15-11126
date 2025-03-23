@@ -10,13 +10,13 @@ Agent::Agent(int picked_turn, int enemy_turn, int limit_time) {
 
 Agent::~Agent() {}
 
-vector<pair<int, int>> Agent::get_available_moves(vector<vector<int>> board) {
+vector<pair<int, int>> Agent::get_available_moves() {
 
     vector<pair<int, int>> moves;
 
-    for (unsigned int i = 0; i < board.size(); i++ ) {
-        for (unsigned int j = 0; j < board[i].size(); j++ ) {
-            if (board[i][j] == -1 && check_surroundings(i, j, board)) {
+    for (unsigned int i = 0; i < this->status.size(); i++ ) {
+        for (unsigned int j = 0; j < this->status[i].size(); j++ ) {
+            if (this->status[i][j] == -1 && check_surroundings(i, j)) {
                 moves.push_back({i, j});
             }
         }
@@ -25,19 +25,19 @@ vector<pair<int, int>> Agent::get_available_moves(vector<vector<int>> board) {
     return moves;
 }
 
-bool Agent::check_surroundings(int pos_i, int pos_j, vector<vector<int>> b) {
+bool Agent::check_surroundings(int pos_i, int pos_j) {
 
     for ( int i = -1; i < 2; i++ ) {
         for ( int j = -1; j < 2; j++ ) {
             if (
                 (i == 0 && j == 0) || 
-                pos_i + i < 0   || pos_i + i >= 17  ||
-                pos_j + j < 0   || pos_j + j >= 17
+                pos_i + i < 0   || pos_i + i >= 18  ||
+                pos_j + j < 0   || pos_j + j >= 18
             ) {
                 continue;
             }
 
-            if (b[pos_i + i][pos_j + j] != -1) {
+            if (this->status[pos_i + i][pos_j + j] != -1) {
                 return true;
             }
         }
@@ -51,7 +51,7 @@ int Agent::alphaBeta(int depth, int alpha, int beta, bool maximizingPlayer) {
     int score = evaluateBoard();
     if (score == INF || score == -INF || depth == 3) return score;
 
-    vector<pair<int, int>> moves = get_available_moves(status);
+    vector<pair<int, int>> moves = get_available_moves();
 
     if (moves.empty()) return 0;
 
@@ -82,7 +82,7 @@ int Agent::alphaBeta(int depth, int alpha, int beta, bool maximizingPlayer) {
 
 pair<int, int> Agent::findBestMove(vector<vector<int>> board) {
     this->status = board;
-    vector<pair<int, int>> moves = get_available_moves(status);
+    vector<pair<int, int>> moves = get_available_moves();
 
     if (moves.empty()) return {-1, -1};
 
