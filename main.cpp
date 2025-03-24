@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
 
     int agent_turn = fichas == "blancas" ? WHITE_TURN : BLACK_TURN;
     int player_turn = agent_turn == WHITE_TURN ? BLACK_TURN : WHITE_TURN;
-
+    vector<vector<int>> status;
     Agent agent(agent_turn, player_turn, stoi(time));
 
     board.print_board();
@@ -45,19 +45,24 @@ int main(int argc, char const *argv[])
 
         if (turn == agent_turn) {
             cout << "Turno del agente" << endl << endl;
+            status = board.get_board_status();
+            board.print_board_status();
+            pair<int, int> move1 = agent.findBestMove(status);
 
-            pair<int, int> move1 = agent.findBestMove(board.get_board_status());
-
-            if (!board.make_play(convert_to_string(move1.first, move1.second), agent_turn)) cout << move1.first << " " <<  move1.second << " " << convert_to_string(move1.first, move1.second) << endl;
+            board.make_play(convert_to_string(move1.first, move1.second), agent_turn);
+            cout << convert_to_string(move1.first, move1.second) << endl;
 
             if (board.winner != -1) {
                 break;
             }
-
-            pair<int, int> move2 = agent.findBestMove(board.get_board_status());
             
-            if (!board.make_play(convert_to_string(move2.first, move2.second), agent_turn)) cout << move2.first << " " <<  move2.second << " " << convert_to_string(move2.first, move2.second) << endl;
+            status = board.get_board_status();
+            board.print_board_status();
 
+            pair<int, int> move2 = agent.findBestMove(status);
+            
+            board.make_play(convert_to_string(move2.first, move2.second), agent_turn);
+            cout << convert_to_string(move2.first, move2.second) << endl;
             turn = player_turn;
             board.print_board();
 
@@ -100,7 +105,7 @@ int main(int argc, char const *argv[])
 
     }
 
-    cout << "Winner: " << board.winner << endl;
+    cout << "Ganador: " << (board.winner == agent_turn ? "Agent" : "Jugador") << endl;
     return 0;
 }
 

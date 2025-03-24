@@ -21,7 +21,7 @@ vector<pair<int, int>> Agent::get_available_moves() {
             }
         }
     }
-
+    
     return moves;
 }
 
@@ -31,8 +31,8 @@ bool Agent::check_surroundings(int pos_i, int pos_j) {
         for ( int j = -1; j < 2; j++ ) {
             if (
                 (i == 0 && j == 0) || 
-                pos_i + i < 0   || pos_i + i >= 18  ||
-                pos_j + j < 0   || pos_j + j >= 18
+                pos_i + i < 0   || pos_i + i >= 19  ||
+                pos_j + j < 0   || pos_j + j >= 19
             ) {
                 continue;
             }
@@ -47,35 +47,39 @@ bool Agent::check_surroundings(int pos_i, int pos_j) {
 
 }
 
-// Nuevo algoritmo Alpha-Beta con profundidad
-int Agent::alphaBeta(int depth, int alpha, int beta, bool isMaximizing) {
-    if (depth == 0 || checkWin(turn) || checkWin(enemy))
-        return evaluateBoard();
 
-    vector<pair<int, int>> moves = get_available_moves(status);
+int Agent::alphaBeta(int depth, int alpha, int beta, bool isMaximizing) {
+    if (depth == 0 || checkWin(turn) || checkWin(enemy)) {
+        return evaluateBoard();
+    }
+
+    vector<pair<int, int>> moves = get_available_moves();
+    if (moves.empty()) {
+        return evaluateBoard();
+    }
 
     if (isMaximizing) {
         int maxEval = -INF;
-        for (auto move : moves) {
+        for (const auto& move : moves) {
             status[move.first][move.second] = turn;
             int eval = alphaBeta(depth - 1, alpha, beta, false);
-            status[move.first][move.second] = -1; 
+            status[move.first][move.second] = -1;
+
             maxEval = max(maxEval, eval);
             alpha = max(alpha, eval);
-            if (beta <= alpha)
-                break;
+            if (beta <= alpha) break;
         }
         return maxEval;
     } else {
         int minEval = INF;
-        for (auto move : moves) {
+        for (const auto& move : moves) {
             status[move.first][move.second] = enemy;
             int eval = alphaBeta(depth - 1, alpha, beta, true);
-            status[move.first][move.second] = -1; 
+            status[move.first][move.second] = -1;
+
             minEval = min(minEval, eval);
             beta = min(beta, eval);
-            if (beta <= alpha)
-                break;
+            if (beta <= alpha) break;
         }
         return minEval;
     }
@@ -86,12 +90,17 @@ pair<int, int> Agent::findBestMove(vector<vector<int>> board) {
     vector<pair<int, int>> moves = get_available_moves();
 
     if (moves.empty()) return {-1, -1};
-
+    sort(moves.begin(), moves.end(), [&](const pair<int, int>& a, const pair<int, int>& b) {
+        return evaluatePosition(a.first, a.second, turn) > evaluatePosition(b.first, b.second, turn);
+    });
+    
     pair<int, int> bestMove;
     int bestValue = -INF;
-    for (size_t i = 0; i < min(moves.size(), (size_t)10); i++) {
+
+    for (size_t i = 0; i < moves.size(); i++) {
+        if (status[moves[i].first][moves[i].second] != -1) continue;
         status[moves[i].first][moves[i].second] = turn;
-        int moveValue = alphaBeta(0, -INF, INF, false);
+        int moveValue = alphaBeta(4, -INF, INF, false);
         status[moves[i].first][moves[i].second] = -1;
 
         if (moveValue > bestValue) {
@@ -136,8 +145,67 @@ bool Agent::checkWin(int player) {
     return false;
 }
 
+int Agent::scoreLine(int x, int y, int dx, int dy, int player) {
+    int count = 0, openEnds = 0;
+    int i = x, j = y;
+
+    while (i >= 0 && j >= 0 && i < SIZE && j < SIZE && status[i][j] == player) {
+        count++;
+        i -= dx;
+        j -= dy;
+    }
+    if (i >= 0 && j >= 0 && i < SIZE && j < SIZE && status[i][j] == -1) {
+        openEnds++;
+    }
+
+    i = x + dx;
+    j = y + dy;
+    while (i >= 0 && j >= 0 && i < SIZE && j < SIZE && status[i][j] == player) {
+        count++;
+        i += dx;
+        j += dy;
+    }
+    if (i >= 0 && j >= 0 && i < SIZE && j < SIZE && status[i][j] == -1) {
+        openEnds++;
+    }
+
+    if (count >= 6) return INF;
+
+    if (count == 5) return (openEnds > 0) ? 10000 : 5000;
+    if (count == 4) return (openEnds > 0) ? 5000 : 1000;
+    if (count == 3) return (openEnds > 0) ? 500 : 200;
+    if (count == 2) return (openEnds > 0) ? 50 : 10;
+
+    return 0;
+}
+
+
+int Agent::evaluatePosition(int x, int y, int player) {
+    int score = 0;
+
+    score += scoreLine(x, y, 1, 0, player); 
+    score += scoreLine(x, y, 0, 1, player); 
+    score += scoreLine(x, y, 1, 1, player); 
+    score += scoreLine(x, y, 1, -1, player);
+
+    return score;
+}
+
 int Agent::evaluateBoard() {
-    if (checkWin(enemy)) return INF;
-    if (checkWin(turn)) return -INF;
-    return rand() % 100;
+    if (checkWin(enemy)) return -INF;
+    if (checkWin(turn)) return INF;
+
+    int score = 0;
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (status[i][j] == turn) {
+                score += evaluatePosition(i, j, turn);
+            } else if (status[i][j] == enemy) {
+                score -= evaluatePosition(i, j, enemy);
+            }
+        }
+    }
+
+    return score;
 }

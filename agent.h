@@ -33,6 +33,8 @@ class Agent {
     pair<int, int> findBestMove(vector<vector<int>>);
     int evaluateBoard();
     bool checkWin(int);
+    int evaluatePosition(int x, int y, int player);
+    int scoreLine(int x, int y, int dx, int dy, int player);
 };
 
 #endif
